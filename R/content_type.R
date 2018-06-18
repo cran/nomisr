@@ -10,6 +10,7 @@
 #' "geoglevel", "2001census" and "sources".
 #'
 #' @param content_type A string with the content type to return metadata on.
+#' 
 #' @param id A string with an optional \code{content_type} id.
 #'
 #' @return A tibble with metadata on a given content type.
@@ -18,7 +19,6 @@
 #' @seealso \code{\link{nomis_data_info}}
 #'
 #' @examples \donttest{
-#'
 #' a <- nomis_content_type("sources")
 #'
 #' tibble::glimpse(a)
@@ -26,11 +26,10 @@
 #' b <- nomis_content_type("sources", id = "census")
 #'
 #' tibble::glimpse(b)
-#'
 #' }
 
 
-nomis_content_type <- function(content_type, id=NULL) {
+nomis_content_type <- function(content_type, id = NULL) {
   if (missing(content_type)) {
     stop("content_type must be specified", call. = FALSE)
   }
@@ -41,11 +40,11 @@ nomis_content_type <- function(content_type, id=NULL) {
     id_query <- paste0("/id/", id)
   }
 
-  query <- paste0(content_url, content_type, id_query, ".json")
+  content_query <- paste0(content_url, content_type, id_query, ".json")
 
-  content_query <- jsonlite::fromJSON(query, flatten = TRUE)
+  content_query2 <- jsonlite::fromJSON(content_query, flatten = TRUE)
 
-  df <- tibble::as.tibble(data.frame(content_query$contenttype$item))
+  df <- tibble::as.tibble(data.frame(content_query2$contenttype$item))
 
   df
 }

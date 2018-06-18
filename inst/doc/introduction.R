@@ -73,7 +73,7 @@ q %>% tidyr::unnest(name) %>% glimpse()
   print(d)
 
 ## ---- echo=TRUE----------------------------------------------------------
- z <- nomis_get_data(id = "NM_893_1", time = "latest", geography = "TYPE266")
+z <- nomis_get_data(id = "NM_893_1", time = "latest", geography = "TYPE266")
 
 print(z)
 

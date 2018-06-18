@@ -12,6 +12,7 @@
 #' @seealso \code{\link{nomis_get_data}}
 #' @seealso \code{\link{nomis_get_metadata}}
 #' @seealso \code{\link{nomis_overview}}
+#' @seealso \code{\link{nomis_codelist}}
 #'
 #' @examples \donttest{
 #'
@@ -29,12 +30,12 @@
 
 nomis_data_info <- function(id) {
   if (missing(id)) {
-    query <- "def.sdmx.json"
+    data_info_query <- "def.sdmx.json"
   } else {
-    query <- paste0(id, "/def.sdmx.json")
+    data_info_query <- paste0(id, "/def.sdmx.json")
   }
 
-  df <- nomis_query_util(query)
+  df <- nomis_query_util(data_info_query)
 
   df
 }

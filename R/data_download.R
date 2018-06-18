@@ -9,15 +9,16 @@
 #' columns.
 #'
 #' @description To find the code options for a given dataset, use
-#' \code{\link{nomis_get_metadata}}.
+#' \code{\link{nomis_get_metadata}} for specific codes, and 
+#' \code{\link{nomis_codelist}} for code values.
 #'
 #' @description This can be a slow process if querying significant amounts of
 #' data. Guest users are limited to 25,000 rows per query, although
 #' \code{nomisr} identifies queries that will return more than 25,000 rows,
 #' sending individual queries and combining the results of those queries into
-#' a single tibble.
-# In interactive sessions, \code{nomisr} will warn you if
-# requesting more than 350,000 rows of data. [not currently implemented]
+#' a single tibble. In interactive sessions, \code{nomisr} will warn you if 
+#' guest users are requesting more than 350,000 rows of data, and if 
+#' registered users are requesting more than 1,500,000 rows.
 #'
 #' @description Note the difference between the \code{time} and \code{date}
 #' parameters.
@@ -26,8 +27,8 @@
 #' \code{date} parameter. If given more than one query, \code{time} will
 #' return all data available between those queries, inclusively, while
 #' \code{date} will only return data for the exact queries specified. So
-#' \code{time=c("first", "latest")} will return all data, while
-#' \code{date=c("first", "latest")} will return only the first and latest
+#' \code{time = c("first", "latest")} will return all data, while
+#' \code{date = c("first", "latest")} will return only the first and latest
 #' data published.
 #'
 #' @param id The ID of the dataset to retrieve.
@@ -79,10 +80,10 @@
 #' If \code{NULL}, returns data for all available statistical measures subject
 #' to other parameters. Defaults to \code{NULL}.
 #'
-#' @param sex The code for sexes included in the dataset. Accepts a string or
-#' number, or a vector of strings or numbers. \code{nomisr} automatically voids
-#' any queries for sex if it is not an available code in the
-#' requested dataset.
+#' @param sex The code for sexes/genders to include in the dataset. 
+#' Accepts a string or number, or a vector of strings or numbers. 
+#' \code{nomisr} automatically voids any queries for sex if it is not an 
+#' available code in the requested dataset.
 #'
 #' There are two different codings used for sex, depending on the dataset. For
 #' datasets using \code{"SEX"}, \code{7} will return results for
@@ -90,24 +91,38 @@
 #' Defaults to \code{NULL}, equivalent to \code{c(5,6,7)} for datasets where
 #' sex is an option. For datasets using \code{"C_SEX"}, \code{0} will return
 #' results for males and females, \code{1} only males and
-#' \code{2} only females.
+#' \code{2} only females. Some datasets use \code{"GENDER"} with the same 
+#' values as \code{"SEX"}, which works with both \code{sex} and 
+#' \code{gender = <code>} as a dot parameter.
 #'
 #' @param additional_queries Any other additional queries to pass to the API.
 #' See \url{https://www.nomisweb.co.uk/api/v01/help} for instructions on
-#' query structure. Defaults to \code{NULL}.
+#' query structure. Defaults to \code{NULL}. Deprecated in package 
+#' versions greater than 0.2.0 and will eventually be removed in a
+#' future version.
 #'
 #' @param exclude_missing If \code{TRUE}, excludes all missing values.
 #' Defaults to \code{FALSE}.
 #'
 #' @param select A character vector of one or more variables to select,
 #' excluding all others. \code{select} is not case sensitive.
+#' 
+#' @param ... Use to pass any other parameters to the API. Useful for passing 
+#' concepts that are not available through the default parameters. Only accepts
+#' concepts identified in \code{\link{nomis_get_metadata}} and concept values 
+#' identified in \code{\link{nomis_codelist}}. Parameters can be quoted or
+#' unquoted, and are not case sensitive. Each parameter should have a name and
+#' a value. For example \code{cause_of_death = 10300} and 
+#' \code{CAUSE_OF_DEATH = 10300} will return the same result when querying 
+#' dataset "NM_161_1".
 #'
 #' @return A tibble containing the selected dataset.
 #' By default, all tibble columns are parsed as characters.
 #' @export
 #' @seealso \code{\link{nomis_data_info}}
 #' @seealso \code{\link{nomis_get_metadata}}
-#'
+#' @seealso \code{\link{nomis_codelist}}
+#' @seealso \code{\link{nomis_overview}}
 #' @examples \donttest{
 #'
 #' # Return data for each country
@@ -131,14 +146,26 @@
 #'                                     "C_OCCPUK11H_0_NAME", "obs_vAlUE"))
 #'
 #' tibble::glimpse(emp_by_occupation)
+#' 
+#' # Deaths in 2016 and 2015 by three specified causes, g
+#' death <- nomis_get_data("NM_161_1", date = c("2016","2015"), 
+#'                         geography = "TYPE480", 
+#'                         cause_of_death=c(10300, 102088, 270))
+#'                     
+#' tibble::glimpse(death)
+#' 
+#' 
+#' # All causes of death in London in 2016
+#' london_death <- nomis_get_data("NM_1_1", date = c("2016"), 
+#'                                geography = "2013265927", sex = 1, age = 0)              
 #'
+#' tibble::glimpse(london_death)
 #' }
 
-
 nomis_get_data <- function(id, time = NULL, date = NULL, geography = NULL,
-                           sex = NULL, measures = NULL,
+                           sex = NULL, measures = NULL, 
                            additional_queries = NULL, exclude_missing = FALSE,
-                           select = NULL) {
+                           select = NULL, ...) {
   if (missing(id)) {
     stop("Dataset ID must be specified", call. = FALSE)
   }
@@ -168,10 +195,14 @@ nomis_get_data <- function(id, time = NULL, date = NULL, geography = NULL,
     ""
   )
 
-  additional_query <- ifelse(length(additional_queries) > 0,
-    additional_queries,
-    ""
-  )
+  if (length(additional_queries) > 0) {
+    additional_query <- additional_queries
+
+    message("The `additional_query` parameter is
+            deprecated, please use ... instead")
+  } else {
+    additional_query <- NULL
+  }
 
   # Check for sex queries and return either sex or c_sex
   if (length(sex) > 0) {
@@ -181,6 +212,8 @@ nomis_get_data <- function(id, time = NULL, date = NULL, geography = NULL,
       sex_query <- paste0("&c_sex=", paste0(sex, collapse = ","))
     } else if ("SEX" %in% sex_lookup) {
       sex_query <- paste0("&sex=", paste0(sex, collapse = ","))
+    }  else if ("GENDER" %in% sex_lookup) {
+      sex_query <- paste0("&gender=", paste0(sex, collapse = ","))
     } else {
       sex_query <- ""
     }
@@ -204,6 +237,22 @@ nomis_get_data <- function(id, time = NULL, date = NULL, geography = NULL,
     ""
   )
 
+  dots <- rlang::list2(...) ## eval the dots
+
+  x <- c()
+  
+  for (i in seq_along(dots)) { # retrieve the dots
+    x[i] <- ifelse(length(dots[[i]]) > 0,
+      paste0(
+        "&", names(dots[i]), "=",
+        paste0(dots[[i]], collapse = ",")
+      ),
+      ""
+    )
+  }
+
+  dots_query <- paste0(x, collapse = "")
+
   if (!is.null(getOption("nomisr.API.key"))) {
     api_query <- paste0("&uid=", getOption("nomisr.API.key"))
     max_length <- 100000
@@ -214,7 +263,7 @@ nomis_get_data <- function(id, time = NULL, date = NULL, geography = NULL,
 
   query <- paste0(
     id, ".data.csv?", time_query, geography_query, sex_query, measures_query,
-    additional_query, exclude_query, select_query, api_query
+    exclude_query, select_query, api_query, additional_query, dots_query
   )
 
   first_df <- nomis_get_data_util(query)

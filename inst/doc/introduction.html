@@ -11,7 +11,7 @@
 
 <meta name="author" content="Evan Odell" />
 
-<meta name="date" content="2018-04-18" />
+<meta name="date" content="2018-06-18" />
 
 <title>Introduction to nomisr</title>
 
@@ -1366,6 +1366,9 @@ img {
 .tabbed-pane {
   padding-top: 12px;
 }
+.html-widget {
+  margin-bottom: 20px;
+}
 button.code-folding-btn:focus {
   outline: none;
 }
@@ -1490,7 +1493,7 @@ div.tocify {
 
 <h1 class="title toc-ignore">Introduction to nomisr</h1>
 <h4 class="author"><em>Evan Odell</em></h4>
-<h4 class="date"><em>2018-04-18</em></h4>
+<h4 class="date"><em>2018-06-18</em></h4>
 
 </div>
 
@@ -1509,14 +1512,14 @@ div.tocify {
 x &lt;- nomis_data_info()
 head(x)</code></pre>
 <pre><code>## # A tibble: 6 x 14
-##   agencyid id     uri    version annotations.annotati… components.attribu…
+##   agencyid id     uri    version annotations.annotati~ components.attribu~
 ##   &lt;chr&gt;    &lt;chr&gt;  &lt;chr&gt;    &lt;dbl&gt; &lt;list&gt;                &lt;list&gt;             
-## 1 NOMIS    NM_1_1 Nm-1d1      1. &lt;data.frame [10 × 2]&gt; &lt;data.frame [7 × 4…
-## 2 NOMIS    NM_2_1 Nm-2d1      1. &lt;data.frame [6 × 2]&gt;  &lt;data.frame [7 × 4…
-## 3 NOMIS    NM_4_1 Nm-4d1      1. &lt;data.frame [8 × 2]&gt;  &lt;data.frame [7 × 4…
-## 4 NOMIS    NM_5_1 Nm-5d1      1. &lt;data.frame [5 × 2]&gt;  &lt;data.frame [7 × 4…
-## 5 NOMIS    NM_6_1 Nm-6d1      1. &lt;data.frame [6 × 2]&gt;  &lt;data.frame [7 × 4…
-## 6 NOMIS    NM_7_1 Nm-7d1      1. &lt;data.frame [6 × 2]&gt;  &lt;data.frame [7 × 4…
+## 1 NOMIS    NM_1_1 Nm-1d1       1 &lt;data.frame [10 x 2]&gt; &lt;data.frame [7 x 4~
+## 2 NOMIS    NM_2_1 Nm-2d1       1 &lt;data.frame [6 x 2]&gt;  &lt;data.frame [7 x 4~
+## 3 NOMIS    NM_4_1 Nm-4d1       1 &lt;data.frame [8 x 2]&gt;  &lt;data.frame [7 x 4~
+## 4 NOMIS    NM_5_1 Nm-5d1       1 &lt;data.frame [5 x 2]&gt;  &lt;data.frame [7 x 4~
+## 5 NOMIS    NM_6_1 Nm-6d1       1 &lt;data.frame [6 x 2]&gt;  &lt;data.frame [7 x 4~
+## 6 NOMIS    NM_7_1 Nm-7d1       1 &lt;data.frame [6 x 2]&gt;  &lt;data.frame [7 x 4~
 ## # ... with 8 more variables: components.dimension &lt;list&gt;,
 ## #   components.primarymeasure.conceptref &lt;chr&gt;,
 ## #   components.timedimension.codelist &lt;chr&gt;,
@@ -1695,47 +1698,47 @@ q %&gt;% tidyr::unnest(name) %&gt;% glimpse()</code></pre>
 <pre class="r"><code>  b &lt;- nomis_get_metadata(id = &quot;NM_893_1&quot;, concept = &quot;GEOGRAPHY&quot;)
 
   print(b)</code></pre>
-<pre><code>## # A tibble: 3 x 2
-##   description            value
-##   &lt;chr&gt;                  &lt;int&gt;
-## 1 England and Wales 2092957703
-## 2 England           2092957699
-## 3 Wales             2092957700</code></pre>
+<pre><code>## # A tibble: 3 x 3
+##   id         parentCode label.en         
+##   &lt;chr&gt;      &lt;chr&gt;      &lt;chr&gt;            
+## 1 2092957703 &lt;NA&gt;       England and Wales
+## 2 2092957699 &lt;NA&gt;       England          
+## 3 2092957700 2092957700 Wales</code></pre>
 <p>We can now pass a generic “type” string to the <code>type</code> parameter in <code>nomis_get_metadata()</code>, which returns all available geography types for dataset “NM_893_1”.</p>
 <pre class="r"><code>  c &lt;- nomis_get_metadata(id = &quot;NM_893_1&quot;, concept = &quot;geography&quot;, type = &quot;type&quot;)
 
   print(c)</code></pre>
 <pre><code>## # A tibble: 22 x 2
-##    description                                        value  
-##    &lt;chr&gt;                                              &lt;chr&gt;  
-##  1 NHS area teams                                     TYPE265
-##  2 clinical commissioning groups                      TYPE266
-##  3 built-up areas including subdivisions              TYPE267
-##  4 built-up areas                                     TYPE269
-##  5 national assembly for wales electoral regions 2010 TYPE273
-##  6 postcode areas                                     TYPE274
-##  7 postcode districts                                 TYPE275
-##  8 postcode sectors                                   TYPE276
-##  9 national assembly for wales constituencies 2010    TYPE277
-## 10 parishes 2011                                      TYPE279
+##    id      label.en                                          
+##    &lt;chr&gt;   &lt;chr&gt;                                             
+##  1 TYPE265 NHS area teams                                    
+##  2 TYPE266 clinical commissioning groups                     
+##  3 TYPE267 built-up areas including subdivisions             
+##  4 TYPE269 built-up areas                                    
+##  5 TYPE273 national assembly for wales electoral regions 2010
+##  6 TYPE274 postcode areas                                    
+##  7 TYPE275 postcode districts                                
+##  8 TYPE276 postcode sectors                                  
+##  9 TYPE277 national assembly for wales constituencies 2010   
+## 10 TYPE279 parishes 2011                                     
 ## # ... with 12 more rows</code></pre>
 <p>Passing a specific type to the <code>type</code> parameter, in this case “TYPE460” for all post-2010 parliamentary constituencies, returns a tibble with geographic codes for those specific constituencies, which can be used to filter queries.</p>
 <pre class="r"><code>  d &lt;- nomis_get_metadata(id = &quot;NM_893_1&quot;, concept = &quot;geography&quot;, type = &quot;TYPE460&quot;)
 
   print(d)</code></pre>
-<pre><code>## # A tibble: 573 x 2
-##    description             value
-##    &lt;chr&gt;                   &lt;int&gt;
-##  1 Berwick-upon-Tweed 1929379865
-##  2 Bishop Auckland    1929379880
-##  3 Blaydon            1929379885
-##  4 Blyth Valley       1929379886
-##  5 City of Durham     1929379952
-##  6 Darlington         1929379969
-##  7 Easington          1929379988
-##  8 Gateshead          1929380020
-##  9 Hartlepool         1929380044
-## 10 Hexham             1929380057
+<pre><code>## # A tibble: 573 x 3
+##    id         parentCode label.en          
+##    &lt;chr&gt;      &lt;chr&gt;      &lt;chr&gt;             
+##  1 1929379865 2013265921 Berwick-upon-Tweed
+##  2 1929379880 2013265921 Bishop Auckland   
+##  3 1929379885 2013265921 Blaydon           
+##  4 1929379886 2013265921 Blyth Valley      
+##  5 1929379952 2013265921 City of Durham    
+##  6 1929379969 2013265921 Darlington        
+##  7 1929379988 2013265921 Easington         
+##  8 1929380020 2013265921 Gateshead         
+##  9 1929380044 2013265921 Hartlepool        
+## 10 1929380057 2013265921 Hexham            
 ## # ... with 563 more rows</code></pre>
 <p>The vast majority (98% as of February 2018) of Nomis datasets include a geographic variable.</p>
 </div>
@@ -1743,9 +1746,9 @@ q %&gt;% tidyr::unnest(name) %&gt;% glimpse()</code></pre>
 <div id="downloading-data" class="section level2">
 <h2>Downloading data</h2>
 <p>Using the information above, we can now query the latest data on bedroom occupancy per household type in different NHS clinical commissioning groups.</p>
-<pre class="r"><code> z &lt;- nomis_get_data(id = &quot;NM_893_1&quot;, time = &quot;latest&quot;, geography = &quot;TYPE266&quot;)
-
-print(z)</code></pre>
+<pre class="r"><code>z &lt;- nomis_get_data(id = &quot;NM_893_1&quot;, time = &quot;latest&quot;, geography = &quot;TYPE266&quot;)</code></pre>
+<pre><code>## Retrieving additional pages 1 of 1</code></pre>
+<pre class="r"><code>print(z)</code></pre>
 <pre><code>## # A tibble: 44,310 x 40
 ##    DATE  DATE_NAME DATE_CODE DATE_TYPE DATE_TYPECODE DATE_SORTORDER
 ##    &lt;chr&gt; &lt;chr&gt;     &lt;chr&gt;     &lt;chr&gt;     &lt;chr&gt;         &lt;chr&gt;         

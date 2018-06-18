@@ -5,7 +5,7 @@
 \title{Nomis metadata concepts and types}
 \usage{
 nomis_get_metadata(id, concept = NULL, type = NULL, search = NULL,
-  additional_queries = NULL)
+  additional_queries = NULL, ...)
 }
 \arguments{
 \item{id}{The ID of the particular dataset. Returns no data if not specified.}
@@ -20,19 +20,23 @@ types of variables available for a given code. Defaults to \code{NULL}. If
 
 \item{search}{A string or character vector of strings to search for in the
 metadata. Defaults to \code{NULL}. As in \code{\link{nomis_search}}, the
-wildcard character * can be added to the beginning and/or end of each
+wildcard character \code{*} can be added to the beginning and/or end of each
 search string.}
 
 \item{additional_queries}{Any other additional queries to pass to the API.
 See \url{https://www.nomisweb.co.uk/api/v01/help} for instructions on
-query structure. Defaults to \code{NULL}.}
+query structure. Defaults to \code{NULL}. Deprecated in package 
+versions greater than 0.2.0 and will eventually be removed.}
+
+\item{...}{Use to pass any other parameters to the API.}
 }
 \value{
-A tibble with options.
+A tibble with metadata options for queries using 
+\code{\link{nomis_get_data}}.
 }
 \description{
-Retrieve all concept code options of all Nomis datasets, concept
-code options for a given dataset, or the all the options for a given
+Retrieve all concept code options of all Nomis datasets, 
+concept code options for a given dataset, or the all the options for a given
 concept variable from a particular dataset. Specifying \code{concept} will
 return all the options for a given variable in a particular dataset.
 
@@ -41,7 +45,6 @@ metadata for a given dataset, see \code{\link{nomis_overview}}.
 }
 \examples{
 \donttest{
-
 a <- nomis_get_metadata('NM_1_1')
 
 tibble::glimpse(a)
@@ -60,16 +63,13 @@ d <- nomis_get_metadata('NM_1_1', 'geography', '1879048226')
 
 tibble::glimpse(d)
 
-e <- nomis_get_metadata('NM_1_1', 'item',
-                        additional_queries = "?geography=1879048226&sex=5")
+e <- nomis_get_metadata('NM_1_1', 'item', geography = 1879048226, sex = 5)
 
-tibble::glimpse(e)
+print(e)
 
 f <- nomis_get_metadata('NM_1_1', 'item', search = "*married*")
 
 tibble::glimpse(f)
-
-
 }
 }
 \seealso{
