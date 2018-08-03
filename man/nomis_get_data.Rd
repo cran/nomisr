@@ -6,15 +6,17 @@
 \usage{
 nomis_get_data(id, time = NULL, date = NULL, geography = NULL,
   sex = NULL, measures = NULL, additional_queries = NULL,
-  exclude_missing = FALSE, select = NULL, ...)
+  exclude_missing = FALSE, select = NULL, tidy = FALSE,
+  tidy_style = "snake_case", ...)
 }
 \arguments{
 \item{id}{The ID of the dataset to retrieve.}
 
-\item{time}{Parameter for selecting dates and date ranges. There are two
-styles of values that can be used to query time.
+\item{time}{Parameter for selecting dates and date ranges. Accepts either a
+single date value, or two date values and returns all data between the two
+date values, There are two styles of values that can be used to query time.
 
-The first is one or more of \code{"latest"} (returns the latest available
+The first is one or two of \code{"latest"} (returns the latest available
 data), \code{"previous"} (the date prior to \code{"latest"}),
 \code{"prevyear"} (the date one year prior to \code{"latest"}) or
 \code{"first"} (the oldest available data for the dataset).
@@ -29,8 +31,13 @@ on the the \code{date} parameter.
 
 Defaults to \code{NULL}.}
 
-\item{date}{Parameter for selecting specific dates. There are two styles
-of values that can be used to query time.
+\item{date}{Parameter for selecting specific dates. Accepts one or more date
+values. If given multiple values, only data for the given dates will be
+returned, but there is no limit to the number of data values. For example,
+\code{date=c("latest, latestMINUS3, latestMINUS6")} will return the latest
+data, data from three months prior to the latest data and six months prior
+to the latest data. There are two styles of values that can be used to 
+query time.
 
 The first is one or more of \code{"latest"} (returns the latest available
 data), \code{"previous"} (the date prior to \code{"latest"}),
@@ -53,9 +60,9 @@ other parameters. Defaults to \code{NULL}. In the rare instance that a
 geographic variable does not exist, if not \code{NULL}, the function
 will return an error.}
 
-\item{sex}{The code for sexes/genders to include in the dataset. 
-Accepts a string or number, or a vector of strings or numbers. 
-\code{nomisr} automatically voids any queries for sex if it is not an 
+\item{sex}{The code for sexes/genders to include in the dataset.
+Accepts a string or number, or a vector of strings or numbers.
+\code{nomisr} automatically voids any queries for sex if it is not an
 available code in the requested dataset.
 
 There are two different codings used for sex, depending on the dataset. For
@@ -64,8 +71,8 @@ males and females, \code{6} only females and \code{5} only males.
 Defaults to \code{NULL}, equivalent to \code{c(5,6,7)} for datasets where
 sex is an option. For datasets using \code{"C_SEX"}, \code{0} will return
 results for males and females, \code{1} only males and
-\code{2} only females. Some datasets use \code{"GENDER"} with the same 
-values as \code{"SEX"}, which works with both \code{sex} and 
+\code{2} only females. Some datasets use \code{"GENDER"} with the same
+values as \code{"SEX"}, which works with both \code{sex = <code>} and
 \code{gender = <code>} as a dot parameter.}
 
 \item{measures}{The code for the statistical measure(s) to include in the
@@ -75,7 +82,7 @@ to other parameters. Defaults to \code{NULL}.}
 
 \item{additional_queries}{Any other additional queries to pass to the API.
 See \url{https://www.nomisweb.co.uk/api/v01/help} for instructions on
-query structure. Defaults to \code{NULL}. Deprecated in package 
+query structure. Defaults to \code{NULL}. Deprecated in package
 versions greater than 0.2.0 and will eventually be removed in a
 future version.}
 
@@ -85,14 +92,24 @@ Defaults to \code{FALSE}.}
 \item{select}{A character vector of one or more variables to select,
 excluding all others. \code{select} is not case sensitive.}
 
-\item{...}{Use to pass any other parameters to the API. Useful for passing 
+\item{tidy}{Logical parameter. If \code{TRUE}, converts variable names to
+\code{snake_case}, or another style as specified by the
+\code{tidy_style} parameter. Defaults to \code{FALSE}.}
+
+\item{tidy_style}{The style to convert variable names to, if
+\code{tidy = TRUE}. Accepts one of \code{"snake_case"}, \code{"camelCase"}
+and \code{"period.case"}. Defaults to \code{"snake_case"}.}
+
+\item{...}{Use to pass any other parameters to the API. Useful for passing
 concepts that are not available through the default parameters. Only accepts
-concepts identified in \code{\link{nomis_get_metadata}} and concept values 
+concepts identified in \code{\link{nomis_get_metadata}} and concept values
 identified in \code{\link{nomis_codelist}}. Parameters can be quoted or
-unquoted, and are not case sensitive. Each parameter should have a name and
-a value. For example \code{cause_of_death = 10300} and 
-\code{CAUSE_OF_DEATH = 10300} will return the same result when querying 
-dataset "NM_161_1".}
+unquoted. Each parameter should have a name and a value. For example,
+\code{CAUSE_OF_DEATH = 10300} when querying dataset \code{"NM_161_1"}.
+Parameters are not case sensitive. Note that R using partial matching for
+function variables, and so passing a parameter with the same opening
+characters as one of the above-named parameters can cause an error unless
+the value of the named parameter is specified. See example below:}
 }
 \value{
 A tibble containing the selected dataset.
@@ -106,15 +123,15 @@ in csv format and parsed with the \code{read_csv} function from the
 columns.
 
 To find the code options for a given dataset, use
-\code{\link{nomis_get_metadata}} for specific codes, and 
+\code{\link{nomis_get_metadata}} for specific codes, and
 \code{\link{nomis_codelist}} for code values.
 
 This can be a slow process if querying significant amounts of
 data. Guest users are limited to 25,000 rows per query, although
 \code{nomisr} identifies queries that will return more than 25,000 rows,
 sending individual queries and combining the results of those queries into
-a single tibble. In interactive sessions, \code{nomisr} will warn you if 
-guest users are requesting more than 350,000 rows of data, and if 
+a single tibble. In interactive sessions, \code{nomisr} will warn you if
+guest users are requesting more than 350,000 rows of data, and if
 registered users are requesting more than 1,500,000 rows.
 
 Note the difference between the \code{time} and \code{date}
@@ -154,18 +171,29 @@ emp_by_occupation <- nomis_get_data(id="NM_168_1", time="latest",
 tibble::glimpse(emp_by_occupation)
 
 # Deaths in 2016 and 2015 by three specified causes, g
-death <- nomis_get_data("NM_161_1", date = c("2016","2015"), 
-                        geography = "TYPE480", 
+death <- nomis_get_data("NM_161_1", date = c("2016","2015"),
+                        geography = "TYPE480",
                         cause_of_death=c(10300, 102088, 270))
-                    
+
 tibble::glimpse(death)
 
 
 # All causes of death in London in 2016
-london_death <- nomis_get_data("NM_1_1", date = c("2016"), 
-                               geography = "2013265927", sex = 1, age = 0)              
+london_death <- nomis_get_data("NM_1_1", date = c("2016"),
+                               geography = "2013265927", sex = 1, age = 0)
 
 tibble::glimpse(london_death)
+}
+\dontrun{
+ ## Results in an error because `measure` is mistaken for `measures`
+ mort_data1 <- nomis_get_data(id = "NM_161_1", date = "2016",
+   geography = "TYPE464", sex = 0, cause_of_death = "10381",
+   age = 0, measure = 6)
+
+ ## Does not error because `measures` is specified
+ mort_data2 <- nomis_get_data(id = "NM_161_1", date = "2016",
+   geography = "TYPE464", sex = 0, measures = NULL,
+   cause_of_death = "10381", age = 0, measure = 6)
 }
 }
 \seealso{

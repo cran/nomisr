@@ -7,19 +7,19 @@
 #' statistics and other economic and demographic data from the Office for
 #' National Statistics.
 #'
-#' The package provides functions to find what data is available, metadata, 
-#' including the variables and query options for different datasets and 
+#' The package provides functions to find what data is available, metadata,
+#' including the variables and query options for different datasets and
 #' a function for downloading data.
 #'
-#' The full API documentation and optional registration for an API key is 
-#' available at \url{https://www.nomisweb.co.uk/api/v01/help}. 
+#' The full API documentation and optional registration for an API key is
+#' available at \url{https://www.nomisweb.co.uk/api/v01/help}.
 #'
 #' @docType package
 #' @name nomisr
 #' @importFrom jsonlite fromJSON
 #' @importFrom tibble as_tibble enframe
 #' @importFrom httr http_type GET http_error status_code
-#' @importFrom readr read_csv
+#' @importFrom readr read_csv col_double col_character
 #' @importFrom dplyr bind_rows
 #' @importFrom utils menu
 #' @importFrom rsdmx readSDMX
