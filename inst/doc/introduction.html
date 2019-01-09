@@ -11,7 +11,7 @@
 
 <meta name="author" content="Evan Odell" />
 
-<meta name="date" content="2018-08-03" />
+<meta name="date" content="2019-01-09" />
 
 <title>Introduction to nomisr</title>
 
@@ -1372,6 +1372,9 @@ img {
 button.code-folding-btn:focus {
   outline: none;
 }
+summary {
+  display: list-item;
+}
 </style>
 
 
@@ -1379,14 +1382,74 @@ button.code-folding-btn:focus {
 <div class="container-fluid main-container">
 
 <!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
 <script>
 $(document).ready(function () {
   window.buildTabsets("TOC");
 });
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
 </script>
 
 <!-- code folding -->
-
 
 
 
@@ -1493,7 +1556,7 @@ div.tocify {
 
 <h1 class="title toc-ignore">Introduction to nomisr</h1>
 <h4 class="author"><em>Evan Odell</em></h4>
-<h4 class="date"><em>2018-08-03</em></h4>
+<h4 class="date"><em>2019-01-09</em></h4>
 
 </div>
 
@@ -1535,9 +1598,9 @@ tibble::glimpse(y)</code></pre>
 ## $ id                                   &lt;chr&gt; &quot;NM_893_1&quot;
 ## $ uri                                  &lt;chr&gt; &quot;Nm-893d1&quot;
 ## $ version                              &lt;dbl&gt; 1
-## $ annotations.annotation               &lt;list&gt; [&lt;c(&quot;Current (being acti...
-## $ components.attribute                 &lt;list&gt; [&lt;c(&quot;Mandatory&quot;, &quot;Condit...
-## $ components.dimension                 &lt;list&gt; [&lt;c(&quot;CL_893_1_GEOGRAPHY&quot;...
+## $ annotations.annotation               &lt;list&gt; [&lt;data.frame[14 x 2]&gt;]
+## $ components.attribute                 &lt;list&gt; [&lt;data.frame[7 x 4]&gt;]
+## $ components.dimension                 &lt;list&gt; [&lt;data.frame[6 x 3]&gt;]
 ## $ components.primarymeasure.conceptref &lt;chr&gt; &quot;OBS_VALUE&quot;
 ## $ components.timedimension.codelist    &lt;chr&gt; &quot;CL_893_1_TIME&quot;
 ## $ components.timedimension.conceptref  &lt;chr&gt; &quot;TIME&quot;
@@ -1577,7 +1640,7 @@ y %&gt;% tidyr::unnest(annotations.annotation) %&gt;% glimpse()</code></pre>
 <div id="searching-for-data" class="section level3">
 <h3>Searching for data</h3>
 <p><code>nomisr</code> also contains the <code>nomis_search()</code> function to search for datasets on particular topics. <code>nomis_search()</code> can be used to search in one or more of dataset names, descriptions, keywords, content type and units. If using multiple parameters, <code>nomis_search()</code> will return information on all datasets that match one or more parameters. Character vectors of strings can be used in searches, and likewise <code>nomis_search()</code> will return information on datasets that match one or more queries. The * is used as a wildcard symbol. <code>nomis_search()</code> returns metadata in the same format as <code>nomis_data_info()</code>, including using list-columns. The <code>nomis_content_type()</code> function can assist in identifying content type IDs for <code>nomis_search()</code>.</p>
-<pre class="r"><code>a &lt;- nomis_search(name = '*jobseekers*', keywords = 'Claimants')
+<pre class="r"><code>a &lt;- nomis_search(name = &#39;*jobseekers*&#39;, keywords = &#39;Claimants&#39;)
 
 tibble::glimpse(a)</code></pre>
 <pre><code>## Observations: 33
@@ -1586,15 +1649,15 @@ tibble::glimpse(a)</code></pre>
 ## $ id                                   &lt;chr&gt; &quot;NM_1_1&quot;, &quot;NM_2_1&quot;, &quot;NM_6...
 ## $ uri                                  &lt;chr&gt; &quot;Nm-1d1&quot;, &quot;Nm-2d1&quot;, &quot;Nm-6...
 ## $ version                              &lt;dbl&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1...
-## $ annotations.annotation               &lt;list&gt; [&lt;c(&quot;Current (being acti...
-## $ components.attribute                 &lt;list&gt; [&lt;c(&quot;Mandatory&quot;, &quot;Condit...
-## $ components.dimension                 &lt;list&gt; [&lt;c(&quot;CL_1_1_GEOGRAPHY&quot;, ...
+## $ annotations.annotation               &lt;list&gt; [&lt;data.frame[10 x 2]&gt;, &lt;...
+## $ components.attribute                 &lt;list&gt; [&lt;data.frame[7 x 4]&gt;, &lt;d...
+## $ components.dimension                 &lt;list&gt; [&lt;data.frame[5 x 3]&gt;, &lt;d...
 ## $ components.primarymeasure.conceptref &lt;chr&gt; &quot;OBS_VALUE&quot;, &quot;OBS_VALUE&quot;,...
 ## $ components.timedimension.codelist    &lt;chr&gt; &quot;CL_1_1_TIME&quot;, &quot;CL_2_1_TI...
 ## $ components.timedimension.conceptref  &lt;chr&gt; &quot;TIME&quot;, &quot;TIME&quot;, &quot;TIME&quot;, &quot;...
 ## $ description.value                    &lt;chr&gt; &quot;Records the number of pe...
 ## $ description.lang                     &lt;chr&gt; &quot;en&quot;, &quot;en&quot;, &quot;en&quot;, &quot;en&quot;, N...
-## $ name.value                           &lt;chr&gt; &quot;Jobseeker's Allowance wi...
+## $ name.value                           &lt;chr&gt; &quot;Jobseeker&#39;s Allowance wi...
 ## $ name.lang                            &lt;chr&gt; &quot;en&quot;, &quot;en&quot;, &quot;en&quot;, &quot;en&quot;, &quot;...</code></pre>
 <pre class="r"><code>a %&gt;% tidyr::unnest(components.attribute) %&gt;% glimpse()</code></pre>
 <pre><code>## Observations: 231
@@ -1608,13 +1671,13 @@ tibble::glimpse(a)</code></pre>
 ## $ components.timedimension.conceptref  &lt;chr&gt; &quot;TIME&quot;, &quot;TIME&quot;, &quot;TIME&quot;, &quot;...
 ## $ description.value                    &lt;chr&gt; &quot;Records the number of pe...
 ## $ description.lang                     &lt;chr&gt; &quot;en&quot;, &quot;en&quot;, &quot;en&quot;, &quot;en&quot;, &quot;...
-## $ name.value                           &lt;chr&gt; &quot;Jobseeker's Allowance wi...
+## $ name.value                           &lt;chr&gt; &quot;Jobseeker&#39;s Allowance wi...
 ## $ name.lang                            &lt;chr&gt; &quot;en&quot;, &quot;en&quot;, &quot;en&quot;, &quot;en&quot;, &quot;...
 ## $ assignmentstatus                     &lt;chr&gt; &quot;Mandatory&quot;, &quot;Conditional...
 ## $ attachmentlevel                      &lt;chr&gt; &quot;Observation&quot;, &quot;Observati...
 ## $ codelist                             &lt;chr&gt; &quot;CL_OBS_STATUS&quot;, &quot;CL_OBS_...
 ## $ conceptref                           &lt;chr&gt; &quot;OBS_STATUS&quot;, &quot;OBS_CONF&quot;,...</code></pre>
-<pre class="r"><code>b &lt;- nomis_search(keywords = c('Claimants', '*Year*'))
+<pre class="r"><code>b &lt;- nomis_search(keywords = c(&#39;Claimants&#39;, &#39;*Year*&#39;))
 
 tibble::glimpse(b)</code></pre>
 <pre><code>## Observations: 82
@@ -1623,15 +1686,15 @@ tibble::glimpse(b)</code></pre>
 ## $ id                                   &lt;chr&gt; &quot;NM_1_1&quot;, &quot;NM_2_1&quot;, &quot;NM_5...
 ## $ uri                                  &lt;chr&gt; &quot;Nm-1d1&quot;, &quot;Nm-2d1&quot;, &quot;Nm-5...
 ## $ version                              &lt;dbl&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1...
-## $ annotations.annotation               &lt;list&gt; [&lt;c(&quot;Current (being acti...
-## $ components.attribute                 &lt;list&gt; [&lt;c(&quot;Mandatory&quot;, &quot;Condit...
-## $ components.dimension                 &lt;list&gt; [&lt;c(&quot;CL_1_1_GEOGRAPHY&quot;, ...
+## $ annotations.annotation               &lt;list&gt; [&lt;data.frame[10 x 2]&gt;, &lt;...
+## $ components.attribute                 &lt;list&gt; [&lt;data.frame[7 x 4]&gt;, &lt;d...
+## $ components.dimension                 &lt;list&gt; [&lt;data.frame[5 x 3]&gt;, &lt;d...
 ## $ components.primarymeasure.conceptref &lt;chr&gt; &quot;OBS_VALUE&quot;, &quot;OBS_VALUE&quot;,...
 ## $ components.timedimension.codelist    &lt;chr&gt; &quot;CL_1_1_TIME&quot;, &quot;CL_2_1_TI...
 ## $ components.timedimension.conceptref  &lt;chr&gt; &quot;TIME&quot;, &quot;TIME&quot;, &quot;TIME&quot;, &quot;...
 ## $ description.value                    &lt;chr&gt; &quot;Records the number of pe...
 ## $ description.lang                     &lt;chr&gt; &quot;en&quot;, &quot;en&quot;, &quot;en&quot;, &quot;en&quot;, &quot;...
-## $ name.value                           &lt;chr&gt; &quot;Jobseeker's Allowance wi...
+## $ name.value                           &lt;chr&gt; &quot;Jobseeker&#39;s Allowance wi...
 ## $ name.lang                            &lt;chr&gt; &quot;en&quot;, &quot;en&quot;, &quot;en&quot;, &quot;en&quot;, &quot;...</code></pre>
 <pre class="r"><code>b %&gt;% tidyr::unnest(components.attribute) %&gt;% glimpse()</code></pre>
 <pre><code>## Observations: 574
@@ -1645,7 +1708,7 @@ tibble::glimpse(b)</code></pre>
 ## $ components.timedimension.conceptref  &lt;chr&gt; &quot;TIME&quot;, &quot;TIME&quot;, &quot;TIME&quot;, &quot;...
 ## $ description.value                    &lt;chr&gt; &quot;Records the number of pe...
 ## $ description.lang                     &lt;chr&gt; &quot;en&quot;, &quot;en&quot;, &quot;en&quot;, &quot;en&quot;, &quot;...
-## $ name.value                           &lt;chr&gt; &quot;Jobseeker's Allowance wi...
+## $ name.value                           &lt;chr&gt; &quot;Jobseeker&#39;s Allowance wi...
 ## $ name.lang                            &lt;chr&gt; &quot;en&quot;, &quot;en&quot;, &quot;en&quot;, &quot;en&quot;, &quot;...
 ## $ assignmentstatus                     &lt;chr&gt; &quot;Mandatory&quot;, &quot;Conditional...
 ## $ attachmentlevel                      &lt;chr&gt; &quot;Observation&quot;, &quot;Observati...
@@ -1660,7 +1723,7 @@ tibble::glimpse(b)</code></pre>
 q %&gt;% tidyr::unnest(name) %&gt;% glimpse()</code></pre>
 <pre><code>## Observations: 20
 ## Variables: 2
-## $ value &lt;list&gt; [[&lt;c(&quot;1&quot;, &quot;4&quot;, &quot;5&quot;), c(&quot;NM_1650_1&quot;, &quot;NM_1650_4&quot;, &quot;NM_16...
+## $ value &lt;list&gt; [[&lt;data.frame[3 x 3]&gt;], &quot;output data for a single date ...
 ## $ name  &lt;chr&gt; &quot;analyses&quot;, &quot;analysisname&quot;, &quot;analysisnumber&quot;, &quot;contact&quot;,...</code></pre>
 <p><code>nomis_overview()</code> has a <code>select</code> parameter that can be used to select only particular elements of the overview to return.</p>
 <pre class="r"><code> s &lt;- nomis_overview(&quot;NM_1650_1&quot;, select = c(&quot;units&quot;, &quot;keywords&quot;))
@@ -1684,7 +1747,7 @@ q %&gt;% tidyr::unnest(name) %&gt;% glimpse()</code></pre>
   print(a)</code></pre>
 <pre><code>## # A tibble: 6 x 3
 ##   codelist                conceptref     isfrequencydimension
-## * &lt;chr&gt;                   &lt;chr&gt;          &lt;chr&gt;               
+##   &lt;chr&gt;                   &lt;chr&gt;          &lt;chr&gt;               
 ## 1 CL_893_1_GEOGRAPHY      GEOGRAPHY      false               
 ## 2 CL_893_1_C_TENHUK11     C_TENHUK11     false               
 ## 3 CL_893_1_C_PPBROOMHEW11 C_PPBROOMHEW11 false               
@@ -1709,18 +1772,18 @@ q %&gt;% tidyr::unnest(name) %&gt;% glimpse()</code></pre>
 
   print(c)</code></pre>
 <pre><code>## # A tibble: 22 x 3
-##    id      label.en                       description.en                  
-##    &lt;chr&gt;   &lt;chr&gt;                          &lt;chr&gt;                           
-##  1 TYPE265 NHS area teams                 NHS area teams                  
-##  2 TYPE266 clinical commissioning groups  clinical commissioning groups   
-##  3 TYPE267 built-up areas including subd~ built-up areas including subdiv~
-##  4 TYPE269 built-up areas                 built-up areas                  
-##  5 TYPE273 national assembly for wales e~ national assembly for wales ele~
-##  6 TYPE274 postcode areas                 postcode areas                  
-##  7 TYPE275 postcode districts             postcode districts              
-##  8 TYPE276 postcode sectors               postcode sectors                
-##  9 TYPE277 national assembly for wales c~ national assembly for wales con~
-## 10 TYPE279 parishes 2011                  parishes 2011                   
+##    id      label.en                       description.en                   
+##    &lt;chr&gt;   &lt;chr&gt;                          &lt;chr&gt;                            
+##  1 TYPE265 NHS area teams                 NHS area teams                   
+##  2 TYPE266 clinical commissioning groups  clinical commissioning groups    
+##  3 TYPE267 built-up areas including subd~ built-up areas including subdivi~
+##  4 TYPE269 built-up areas                 built-up areas                   
+##  5 TYPE273 national assembly for wales e~ national assembly for wales elec~
+##  6 TYPE274 postcode areas                 postcode areas                   
+##  7 TYPE275 postcode districts             postcode districts               
+##  8 TYPE276 postcode sectors               postcode sectors                 
+##  9 TYPE277 national assembly for wales c~ national assembly for wales cons~
+## 10 TYPE279 parishes 2011                  parishes 2011                    
 ## # ... with 12 more rows</code></pre>
 <p>Passing a specific type to the <code>type</code> parameter, in this case “TYPE460” for all post-2010 parliamentary constituencies, returns a tibble with geographic codes for those specific constituencies, which can be used to filter queries.</p>
 <pre class="r"><code>  d &lt;- nomis_get_metadata(id = &quot;NM_893_1&quot;, concept = &quot;geography&quot;, type = &quot;TYPE460&quot;)

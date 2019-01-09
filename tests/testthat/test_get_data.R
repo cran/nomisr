@@ -47,12 +47,14 @@ test_that("nomis_get_data return expected format", {
 
   c <- nomis_get_data(
     id = "NM_127_1", sex = "6",
-    time = "latest", tidy = TRUE
+    time = "latest", tidy = TRUE, query_id = "my_query123"
   )
-  expect_length(c, 28)
+  expect_length(c, 29)
   expect_type(c, "list")
   expect_true(tibble::is_tibble(c))
   expect_true(nrow(c) == c$record_count[1])
+  expect_equal(names(c)[[1]], "query_id")
+  expect_equal(c$query_id[[543]], "my_query123")
 
   expect_error(nomis_get_data(
     id = "NM_1_1", time = "latest",
@@ -71,6 +73,19 @@ test_that("nomis_get_data return expected format", {
   expect_length(x_select, 3)
   expect_type(x_select, "list")
   expect_true(tibble::is_tibble(x_select))
+  
+
+  select_no_obs <- nomis_get_data(id = "NM_1208_1", time = "latest",
+                                  USUAL_RESIDENCE = "TYPE499",
+                                  PLACE_OF_WORK = "TYPE499", 
+                                  TRANSPORT_POWPEW11 = "2",
+                                  select = c("USUAL_RESIDENCE_NAME", 
+                                             "PLACE_OF_WORK_NAME"))
+  expect_length(select_no_obs, 2)
+  expect_true(tibble::is_tibble(select_no_obs))
+  expect_true(all(names(select_no_obs)==c("USUAL_RESIDENCE_NAME",
+                                          "PLACE_OF_WORK_NAME")))
+  
 
   mort_data1 <- nomis_get_data(
     id = "NM_161_1", date = "2016", tidy = TRUE,
@@ -95,7 +110,6 @@ test_that("nomis_get_data return expected format", {
       geography = "TYPE464", sex = 0,
       cause_of_death = "10381",
       age = 0, measure = 6
-    ),
-    "The API request did not return any results.\nPlease check your parameters."
+    )
   )
 })
