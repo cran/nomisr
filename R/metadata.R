@@ -30,6 +30,8 @@
 #' versions greater than 0.2.0 and will eventually be removed.
 #'
 #' @param ... Use to pass any other parameters to the API.
+#' 
+#' @param tidy If `TRUE`, converts tibble names to snakecase.
 #'
 #' @seealso [nomis_data_info()]
 #' @seealso [nomis_get_data()]
@@ -39,37 +41,37 @@
 #' [nomis_get_data()].
 #' @export
 #'
-#' @examples \donttest{
-#' a <- nomis_get_metadata('NM_1_1')
+#' @examples
+#' \donttest{
+#' a <- nomis_get_metadata("NM_1_1")
 #'
-#' tibble::glimpse(a)
+#' print(a)
 #'
-#' b <- nomis_get_metadata('NM_1_1', 'geography')
+#' b <- nomis_get_metadata("NM_1_1", "geography")
 #'
 #' tibble::glimpse(b)
 #'
 #' # returns all types of geography
-#' c <- nomis_get_metadata('NM_1_1', 'geography', 'TYPE')
+#' c <- nomis_get_metadata("NM_1_1", "geography", "TYPE")
 #'
 #' tibble::glimpse(c)
 #'
 #' # returns geography types available within Wigan
-#' d <- nomis_get_metadata('NM_1_1', 'geography', '1879048226')
+#' d <- nomis_get_metadata("NM_1_1", "geography", "1879048226")
 #'
 #' tibble::glimpse(d)
 #'
-#' e <- nomis_get_metadata('NM_1_1', 'item', geography = 1879048226, sex = 5)
+#' e <- nomis_get_metadata("NM_1_1", "item", geography = 1879048226, sex = 5)
 #'
 #' print(e)
 #'
-#' f <- nomis_get_metadata('NM_1_1', 'item', search = "*married*")
+#' f <- nomis_get_metadata("NM_1_1", "item", search = "*married*")
 #'
 #' tibble::glimpse(f)
 #' }
-
-nomis_get_metadata <- function(id, concept = NULL,
-                               type = NULL, search = NULL,
-                               additional_queries = NULL, ...) {
+#'
+nomis_get_metadata <- function(id, concept = NULL, type = NULL, search = NULL,
+                               additional_queries = NULL, ..., tidy = FALSE) {
   if (missing(id)) {
     stop("The dataset ID must be specified.", call. = FALSE)
   }
@@ -79,7 +81,7 @@ nomis_get_metadata <- function(id, concept = NULL,
     additional_query <- additional_queries
 
     message("The `additional_query` parameter is
-            deprecated, please use ... instead")
+            deprecated, please use `...` instead")
   } else {
     additional_query <- NULL
   }
@@ -87,9 +89,16 @@ nomis_get_metadata <- function(id, concept = NULL,
   if (is.null(concept)) {
     no_code_q <- nomis_data_info(id)
 
-    df <- tibble::as_tibble(
+    df1 <- tibble::as_tibble(
       as.data.frame(no_code_q$components.dimension)
     )
+    
+    names(no_code_q) <- gsub("components.timedimension.", "",
+                             names(no_code_q), fixed = TRUE)
+    
+    no_code_q <- no_code_q[c("codelist", "conceptref")]
+
+    df <- bind_rows(df1, no_code_q)
 
     df$isfrequencydimension[is.na(df$isfrequencydimension)] <- "false"
   } else {
@@ -128,5 +137,9 @@ nomis_get_metadata <- function(id, concept = NULL,
     ))
   }
 
+  if (tidy) {
+    names(df) <- snakecase::to_snake_case(names(df))
+  }
+  
   df
 }

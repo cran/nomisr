@@ -1,14 +1,14 @@
-## ---- echo=TRUE----------------------------------------------------------
+## ----all-datasets, echo=TRUE--------------------------------------------------
 library(nomisr)
 x <- nomis_data_info()
 head(x)
 
-## ---- echo=TRUE----------------------------------------------------------
+## ----specific-dataset, echo=TRUE----------------------------------------------
 y <- nomis_data_info("NM_893_1")
 
 tibble::glimpse(y)
 
-## ---- echo=TRUE----------------------------------------------------------
+## ----specific-dataset-exam, echo=TRUE-----------------------------------------
 library(dplyr, warn.conflicts = F)
 
 y$annotations.annotation %>% class()
@@ -26,7 +26,7 @@ y %>% pull(annotations.annotation) %>% purrr::pluck() %>% class()
 ## Unnesting list columns
 y %>% tidyr::unnest(annotations.annotation) %>% glimpse()
 
-## ---- echo=TRUE----------------------------------------------------------
+## ----data-searching, echo=TRUE------------------------------------------------
 a <- nomis_search(name = '*jobseekers*', keywords = 'Claimants')
 
 tibble::glimpse(a)
@@ -40,45 +40,71 @@ tibble::glimpse(b)
 b %>% tidyr::unnest(components.attribute) %>% glimpse()
 
 
-## ---- echo=TRUE----------------------------------------------------------
+## ----overview, echo=TRUE------------------------------------------------------
 q <- nomis_overview("NM_1650_1")
 
 q %>% tidyr::unnest(name) %>% glimpse()
 
 
-## ---- echo=TRUE----------------------------------------------------------
- s <- nomis_overview("NM_1650_1", select = c("units", "keywords"))
+## ----overview-select, echo=TRUE-----------------------------------------------
+s <- nomis_overview("NM_1650_1", select = c("units", "keywords"))
  
- s %>% tidyr::unnest(name) %>% glimpse()
+s %>% tidyr::unnest(name) %>% glimpse()
 
-## ---- echo=TRUE----------------------------------------------------------
+## ----get-metadata, echo=TRUE--------------------------------------------------
+a <- nomis_get_metadata(id = "NM_893_1")
 
-  a <- nomis_get_metadata(id = "NM_893_1")
+print(a)
 
-  print(a)
+## ----concepts, echo=TRUE------------------------------------------------------
+b <- nomis_get_metadata(id = "NM_893_1", concept = "GEOGRAPHY")
 
-## ---- echo=TRUE----------------------------------------------------------
-  b <- nomis_get_metadata(id = "NM_893_1", concept = "GEOGRAPHY")
+print(b)
 
-  print(b)
+## ----concept-types, echo=TRUE-------------------------------------------------
+c <- nomis_get_metadata(id = "NM_893_1", concept = "geography", type = "type")
 
-## ---- echo=TRUE----------------------------------------------------------
-  c <- nomis_get_metadata(id = "NM_893_1", concept = "geography", type = "type")
+print(c)
 
-  print(c)
+## ----concept-type460, echo=TRUE-----------------------------------------------
+d <- nomis_get_metadata(id = "NM_893_1", concept = "geography", type = "TYPE460")
 
-## ---- echo=TRUE----------------------------------------------------------
-  d <- nomis_get_metadata(id = "NM_893_1", concept = "geography", type = "TYPE460")
+print(d)
 
-  print(d)
-
-## ---- echo=TRUE----------------------------------------------------------
+## ----download-data, echo=TRUE-------------------------------------------------
 z <- nomis_get_data(id = "NM_893_1", time = "latest", geography = "TYPE266")
 
 print(z)
 
-## ---- echo=TRUE----------------------------------------------------------
- x <- nomis_get_data(id = "NM_893_1", time = "latest", geography = c("1929380119", "1929380120"))
+## ----download-specific-area, echo=TRUE----------------------------------------
+x <- nomis_get_data(id = "NM_893_1", time = "latest", geography = c("1929380119", "1929380120"))
  
 print(x)
+
+## ----jsa-claimaints-----------------------------------------------------------
+library(ggplot2)
+
+jsa <- nomis_get_data(id = "NM_1_1", time = "2015-01-2020-01",
+                      geography = "TYPE480", measures=20201,
+                      sex=c(5,6), item = 1, tidy = TRUE)
+
+jsa <- jsa %>% 
+  mutate(date = as.Date(paste0(date, "-01")),
+         obs_value = obs_value/100)
+
+theme_set(theme_bw())
+
+p_jsa <- ggplot(jsa, aes(x = date, y = obs_value, colour = sex_name)) + 
+  geom_line(size = 1.15) +
+  scale_colour_viridis_d(end = 0.75, begin = 0.1, name = "Gender") + 
+  scale_x_date(breaks = "6 months", date_labels = "%b %Y") + 
+  scale_y_continuous(labels = scales::percent) + 
+  theme(axis.text.x = element_text(angle = 30, hjust = 1, size = 8),
+        legend.position = "bottom") + 
+  labs(x = "Date", y= "JSA Claimants (Percentage of Workforce)") + 
+  facet_wrap(~geography_name, scales = "free_y")
+
+
+p_jsa
+
 

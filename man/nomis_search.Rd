@@ -4,8 +4,14 @@
 \alias{nomis_search}
 \title{Search Nomis datasets}
 \usage{
-nomis_search(name = NULL, description = NULL, keywords = NULL,
-  content_type = NULL, units = NULL)
+nomis_search(
+  name = NULL,
+  description = NULL,
+  keywords = NULL,
+  content_type = NULL,
+  units = NULL,
+  tidy = FALSE
+)
 }
 \arguments{
 \item{name}{A string or character vector of strings to search for in
@@ -25,6 +31,8 @@ optional ID for that content type. Defaults to \code{NULL}.}
 
 \item{units}{A string or character vector of strings to search for in
 available dataset units. Defaults to \code{NULL}.}
+
+\item{tidy}{If \code{TRUE}, converts tibble names to snakecase.}
 }
 \value{
 A tibble with details on all datasets matching the search query.
@@ -37,9 +45,9 @@ beginning and/or end of each search string.
 }
 \examples{
 \donttest{
-x <- nomis_search(name = '*seekers*')
+x <- nomis_search(name = "*seekers*")
 
-y <- nomis_search(keywords = 'Claimants')
+y <- nomis_search(keywords = "Claimants")
 
 # Return metadata of all datasets with content_type "sources".
 a <- nomis_search(content_type = "sources")
@@ -49,6 +57,7 @@ a <- nomis_search(content_type = "sources")
 # source ID "acses"
 b <- nomis_search(content_type = "sources-acses")
 }
+
 }
 \seealso{
 \code{\link[=nomis_content_type]{nomis_content_type()}}

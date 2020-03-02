@@ -1,7 +1,7 @@
 Package: nomisr
 Type: Package
 Title: Access 'Nomis' UK Labour Market Data
-Version: 0.4.1
+Version: 0.4.3
 Authors@R: c(
     person(
       "Evan", "Odell", email = "evanodell91@gmail.com", role = c("aut", "cre"),
@@ -22,16 +22,18 @@ URL: https://github.com/ropensci/nomisr,
 BugReports: https://github.com/ropensci/nomisr/issues
 License: MIT + file LICENSE
 Depends: R (>= 3.4.0)
-Imports: jsonlite, tibble, readr, dplyr, httr, utils, rsdmx, rlang
-RoxygenNote: 6.1.1
-Suggests: knitr, rmarkdown, testthat, purrr, tidyr, magrittr
+Imports: jsonlite, tibble, readr, dplyr, httr, utils, rsdmx, rlang,
+        snakecase
+RoxygenNote: 7.0.2
+Suggests: knitr, rmarkdown, testthat, purrr, tidyr, magrittr, ggplot2,
+        scales
 VignetteBuilder: knitr
 Encoding: UTF-8
 NeedsCompilation: no
-Packaged: 2019-01-09 14:42:12 UTC; EOdell
+Packaged: 2020-03-02 17:27:05 UTC; evanodell
 Author: Evan Odell [aut, cre] (<https://orcid.org/0000-0003-1845-808X>),
   Paul Egeler [rev, ctb],
   Christophe Dervieux [rev] (<https://orcid.org/0000-0003-4474-2498>)
 Maintainer: Evan Odell <evanodell91@gmail.com>
 Repository: CRAN
-Date/Publication: 2019-01-09 15:20:06 UTC
+Date/Publication: 2020-03-02 23:00:03 UTC

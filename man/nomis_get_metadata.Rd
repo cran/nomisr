@@ -4,8 +4,15 @@
 \alias{nomis_get_metadata}
 \title{Nomis metadata concepts and types}
 \usage{
-nomis_get_metadata(id, concept = NULL, type = NULL, search = NULL,
-  additional_queries = NULL, ...)
+nomis_get_metadata(
+  id,
+  concept = NULL,
+  type = NULL,
+  search = NULL,
+  additional_queries = NULL,
+  ...,
+  tidy = FALSE
+)
 }
 \arguments{
 \item{id}{The ID of the particular dataset. Returns no data if not specified.}
@@ -29,6 +36,8 @@ query structure. Defaults to \code{NULL}. Deprecated in package
 versions greater than 0.2.0 and will eventually be removed.}
 
 \item{...}{Use to pass any other parameters to the API.}
+
+\item{tidy}{If \code{TRUE}, converts tibble names to snakecase.}
 }
 \value{
 A tibble with metadata options for queries using
@@ -45,32 +54,33 @@ metadata for a given dataset, see \code{\link[=nomis_overview]{nomis_overview()}
 }
 \examples{
 \donttest{
-a <- nomis_get_metadata('NM_1_1')
+a <- nomis_get_metadata("NM_1_1")
 
-tibble::glimpse(a)
+print(a)
 
-b <- nomis_get_metadata('NM_1_1', 'geography')
+b <- nomis_get_metadata("NM_1_1", "geography")
 
 tibble::glimpse(b)
 
 # returns all types of geography
-c <- nomis_get_metadata('NM_1_1', 'geography', 'TYPE')
+c <- nomis_get_metadata("NM_1_1", "geography", "TYPE")
 
 tibble::glimpse(c)
 
 # returns geography types available within Wigan
-d <- nomis_get_metadata('NM_1_1', 'geography', '1879048226')
+d <- nomis_get_metadata("NM_1_1", "geography", "1879048226")
 
 tibble::glimpse(d)
 
-e <- nomis_get_metadata('NM_1_1', 'item', geography = 1879048226, sex = 5)
+e <- nomis_get_metadata("NM_1_1", "item", geography = 1879048226, sex = 5)
 
 print(e)
 
-f <- nomis_get_metadata('NM_1_1', 'item', search = "*married*")
+f <- nomis_get_metadata("NM_1_1", "item", search = "*married*")
 
 tibble::glimpse(f)
 }
+
 }
 \seealso{
 \code{\link[=nomis_data_info]{nomis_data_info()}}

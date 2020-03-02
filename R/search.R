@@ -24,15 +24,18 @@
 #'
 #' @param units A string or character vector of strings to search for in
 #' available dataset units. Defaults to `NULL`.
+#' 
+#' @param tidy If `TRUE`, converts tibble names to snakecase. 
 #'
 #' @return A tibble with details on all datasets matching the search query.
 #' @export
 #' @seealso [nomis_content_type()]
 #'
-#' @examples \donttest{
-#' x <- nomis_search(name = '*seekers*')
+#' @examples
+#' \donttest{
+#' x <- nomis_search(name = "*seekers*")
 #'
-#' y <- nomis_search(keywords = 'Claimants')
+#' y <- nomis_search(keywords = "Claimants")
 #'
 #' # Return metadata of all datasets with content_type "sources".
 #' a <- nomis_search(content_type = "sources")
@@ -42,10 +45,10 @@
 #' # source ID "acses"
 #' b <- nomis_search(content_type = "sources-acses")
 #' }
-
-
+#'
 nomis_search <- function(name = NULL, description = NULL,
-                         keywords = NULL, content_type = NULL, units = NULL) {
+                         keywords = NULL, content_type = NULL, units = NULL,
+                         tidy = FALSE) {
   if (length(name) > 0) {
     name_query <- paste0(
       "&search=name-",
@@ -96,7 +99,7 @@ nomis_search <- function(name = NULL, description = NULL,
     keywords_query, content_type_query, units_query
   )
 
-  df <- nomis_query_util(query)
+  df <- nomis_query_util(query, tidy)
 
   df
 }

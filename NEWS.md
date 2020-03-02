@@ -1,3 +1,24 @@
+
+# nomisr 0.4.3
+
+* Fix readme links
+
+# nomisr 0.4.2
+
+* Error handling improvements when using non-existent parameters, and clarifies
+  error messages when no data is available for a given query.
+  
+* Removes redundant call to API (#19), thanks @Chrisjb
+
+* New `tidy` parameter in `nomis_get_metadata()` to convert names to snake_case.
+
+* Now using the `snakecase` package to implement name cleaning, 
+  providing a broader range of naming styles.
+  
+* `nomis_get_metadata()` now makes existence of time concept explicit in the 
+  tibble returned by `nomis_get_metadata({id})`.
+
+
 # nomisr 0.4.1
 
 * Adding `query_id` parameter to `nomis_get_data()`
