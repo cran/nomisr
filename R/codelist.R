@@ -43,16 +43,14 @@ nomis_codelist <- function(id, concept, search = NULL) {
 
   id_query <- paste0(gsub("NM", "CL", id), "_")
 
-  search_query <- ifelse(is.null(search), "",
-    paste0("?search=", search)
-  )
+  search_query <- ifelse(is.null(search), "", paste0("?search=", search))
 
   code_query <- paste0(
     codelist_url, id_query, concept,
     ".def.sdmx.xml", search_query
   )
 
-  df <- tibble::as.tibble(as.data.frame(rsdmx::readSDMX(code_query)))
+  df <- tibble::as_tibble(rsdmx::readSDMX(code_query))
 
   df
 }
