@@ -5,7 +5,7 @@ test_that("nomis_get_data return expected format", {
   skip_on_cran()
 
   z <- nomis_get_data(
-    id = "NM_1_1", time = "latest",
+    id = "NM_1_1", time = "2021-11",
     measures = c(20100, 20201), sex = 5,
     exclude_missing = TRUE, geography = "TYPE499"
   )
@@ -21,12 +21,14 @@ test_that("nomis_get_data return expected format", {
   expect_length(a, 40)
   expect_type(a, "list")
   expect_true(tibble::is_tibble(a))
+  expect_true(nrow(a) == a$record_count[1])
   expect_equal(
     as.numeric(a$record_offset[[nrow(a)]]) + 1,
     as.numeric(a$record_count[[nrow(a)]])
   )
-  sum_check <- summary(diff(as.numeric(a$record_offset)))
-  expect_equal(sum_check[[1]], 1)
+  sum_check <- unique(diff(as.numeric(a$record_offset)))
+  expect_length(sum_check, 1)
+  expect_equal(sum_check, 1)
 
   expect_error(nomis_get_data(), "Dataset ID must be specified")
 
@@ -43,7 +45,6 @@ test_that("nomis_get_data return expected format", {
   expect_length(b, 40)
   expect_type(b, "list")
   expect_true(tibble::is_tibble(b))
-  expect_true(nrow(a) == a$record_count[1])
 
   c <- nomis_get_data(
     id = "NM_127_1", sex = "6",
@@ -64,19 +65,6 @@ test_that("nomis_get_data return expected format", {
     ),
     "The API request did not return any results. Please check your parameters."
   )
-
-  x_select <- nomis_get_data(
-    id = "NM_168_1", time = "latest",
-    geography = "2013265925", sex = "0",
-    select = c(
-      "geography_code", "C_OCCPUK11H_0_NAME",
-      "obs_vAlUE"
-    )
-  )
-  expect_length(x_select, 3)
-  expect_type(x_select, "list")
-  expect_true(tibble::is_tibble(x_select))
-
 
   select_no_obs <- nomis_get_data(
     id = "NM_1208_1", time = "latest",
