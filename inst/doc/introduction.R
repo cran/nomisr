@@ -4,53 +4,69 @@ y <- nomis_data_info("NM_893_1")
 
 tibble::glimpse(y)
 
-## ----specific-dataset-exam, echo=TRUE-----------------------------------------
-library(dplyr, warn.conflicts = F)
+## ----specific-dataset-exam, eval=FALSE----------------------------------------
+#  library(dplyr, warn.conflicts = F)
+#  
+#  y$annotations.annotation %>% class()
+#  
+#  y$annotations.annotation %>% length()
+#  
+#  y$annotations.annotation[[1]] %>% class()
+#  
+#  y %>% pull(annotations.annotation) %>% class()
+#  
+#  y %>% pull(annotations.annotation) %>% .[[1]] %>% class()
+#  
+#  y %>% pull(annotations.annotation) %>% purrr::pluck() %>% class()
+#  
+#  ## Unnesting list columns
+#  y %>% tidyr::unnest(annotations.annotation) %>% glimpse()
 
-y$annotations.annotation %>% class()
+## ----data-searching, eval=FALSE-----------------------------------------------
+#  a <- nomis_search(name = '*jobseekers*', keywords = 'Claimants')
+#  
+#  tibble::glimpse(a)
+#  
+#  a %>% tidyr::unnest(components.attribute) %>% glimpse()
+#  
+#  b <- nomis_search(keywords = c('Claimants', '*Year*'))
+#  
+#  tibble::glimpse(b)
+#  
+#  b %>% tidyr::unnest(components.attribute) %>% glimpse()
+#  
 
-y$annotations.annotation %>% length()
+## ----overview, eval=FALSE-----------------------------------------------------
+#  q <- nomis_overview("NM_1650_1")
+#  
+#  q %>% tidyr::unnest(name) %>% glimpse()
+#  
 
-y$annotations.annotation[[1]] %>% class()
+## ----overview-select, eval=FALSE----------------------------------------------
+#  s <- nomis_overview("NM_1650_1", select = c("units", "keywords"))
+#  
+#  s %>% tidyr::unnest(name) %>% glimpse()
 
-y %>% pull(annotations.annotation) %>% class()
+## ----get-metadata, eval=FALSE-------------------------------------------------
+#  a <- nomis_get_metadata(id = "NM_893_1")
 
-y %>% pull(annotations.annotation) %>% .[[1]] %>% class()
+## ----concepts, eval=FALSE-----------------------------------------------------
+#  b <- nomis_get_metadata(id = "NM_893_1", concept = "GEOGRAPHY")
 
-y %>% pull(annotations.annotation) %>% purrr::pluck() %>% class()
+## ----geographies, eval=FALSE--------------------------------------------------
+#  c <- nomis_get_metadata(id = "NM_893_1", concept = "geography", type = "type")
 
-## Unnesting list columns
-y %>% tidyr::unnest(annotations.annotation) %>% glimpse()
+## ----constituencies, eval=FALSE-----------------------------------------------
+#  d <- nomis_get_metadata(id = "NM_893_1",
+#                          concept = "geography", type = "TYPE460")
+#  
 
-## ----data-searching, echo=TRUE------------------------------------------------
-a <- nomis_search(name = '*jobseekers*', keywords = 'Claimants')
+## ----ccg, eval=FALSE----------------------------------------------------------
+#  z <- nomis_get_data(id = "NM_893_1", time = "latest", geography = "TYPE266")
 
-tibble::glimpse(a)
-
-a %>% tidyr::unnest(components.attribute) %>% glimpse()
-
-b <- nomis_search(keywords = c('Claimants', '*Year*'))
-
-tibble::glimpse(b)
-
-b %>% tidyr::unnest(components.attribute) %>% glimpse()
-
-
-## ----overview, echo=TRUE------------------------------------------------------
-q <- nomis_overview("NM_1650_1")
-
-q %>% tidyr::unnest(name) %>% glimpse()
-
-
-## ----overview-select, echo=TRUE-----------------------------------------------
-s <- nomis_overview("NM_1650_1", select = c("units", "keywords"))
- 
-s %>% tidyr::unnest(name) %>% glimpse()
-
-## ----get-metadata, echo=TRUE--------------------------------------------------
-a <- nomis_get_metadata(id = "NM_893_1")
-
-a
+## ----NM_893_1-gorton-withington, eval=FALSE-----------------------------------
+#  x <- nomis_get_data(id = "NM_893_1", time = "latest",
+#                      geography = c("1929380119", "1929380120"))
 
 ## ----jsa-claimaints, eval=FALSE-----------------------------------------------
 #  library(ggplot2)

@@ -1,7 +1,7 @@
 Package: nomisr
 Type: Package
 Title: Access 'Nomis' UK Labour Market Data
-Version: 0.4.5
+Version: 0.4.6
 Authors@R: c(
     person(
       "Evan", "Odell", email = "evanodell91@gmail.com", role = c("aut", "cre"),
@@ -32,11 +32,11 @@ Suggests: knitr, rmarkdown, testthat, purrr, tidyr, magrittr, ggplot2,
 VignetteBuilder: knitr
 Encoding: UTF-8
 NeedsCompilation: no
-Packaged: 2022-02-05 13:05:57 UTC; evanodell
+Packaged: 2022-03-06 20:43:47 UTC; evanodell
 Author: Evan Odell [aut, cre] (<https://orcid.org/0000-0003-1845-808X>),
   Paul Egeler [rev, ctb],
   Christophe Dervieux [rev] (<https://orcid.org/0000-0003-4474-2498>),
   Nina Robery [ctb] (Work and Health Indicators with nomisr vignette)
 Maintainer: Evan Odell <evanodell91@gmail.com>
 Repository: CRAN
-Date/Publication: 2022-02-05 13:50:02 UTC
+Date/Publication: 2022-03-06 21:00:02 UTC
